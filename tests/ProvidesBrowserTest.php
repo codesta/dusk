@@ -2,10 +2,10 @@
 
 namespace Laravel\Dusk\Tests;
 
-use stdClass;
+use Laravel\Dusk\Concerns\ProvidesBrowser;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Laravel\Dusk\Concerns\ProvidesBrowser;
+use stdClass;
 
 class ProvidesBrowserTest extends TestCase
 {
@@ -42,12 +42,12 @@ class ProvidesBrowserTest extends TestCase
     public function testData()
     {
         return [
-            ['foo']
+            ['foo'],
         ];
     }
 
     /**
-     * Implementation of abstract ProvidesBrowser::driver()
+     * Implementation of abstract ProvidesBrowser::driver().
      */
     protected function driver()
     {

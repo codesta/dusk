@@ -2,13 +2,14 @@
 
 namespace Laravel\Dusk;
 
-use Closure;
 use BadMethodCallException;
-use Illuminate\Support\Str;
-use Facebook\WebDriver\WebDriverPoint;
-use Illuminate\Support\Traits\Macroable;
-use Facebook\WebDriver\WebDriverDimension;
+use Closure;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
+use Facebook\WebDriver\WebDriverPoint;
+use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Macroable;
 
 class Browser
 {
@@ -167,6 +168,21 @@ class Browser
      */
     public function on($page)
     {
+        $this->onWithoutAssert($page);
+
+        $page->assert($this);
+
+        return $this;
+    }
+
+    /**
+     * Set the current page object without executing the assertions.
+     *
+     * @param  mixed  $page
+     * @return $this
+     */
+    public function onWithoutAssert($page)
+    {
         $this->page = $page;
 
         // Here we will set the page elements on the resolver instance, which will allow
@@ -175,8 +191,6 @@ class Browser
         $this->resolver->pageElements(array_merge(
             $page::siteElements(), $page->elements()
         ));
-
-        $page->assert($this);
 
         return $this;
     }
@@ -234,6 +248,22 @@ class Browser
     }
 
     /**
+     * Make the browser window as large as the content.
+     *
+     * @return $this
+     */
+    public function fitContent()
+    {
+        $body = $this->driver->findElement(WebDriverBy::tagName('body'));
+
+        if (! empty($body)) {
+            $this->resize($body->getSize()->getWidth(), $body->getSize()->getHeight());
+        }
+
+        return $this;
+    }
+
+    /**
      * Move the browser window.
      *
      * @param  int  $x
@@ -250,6 +280,23 @@ class Browser
     }
 
     /**
+     * Scroll screen to element at the given selector.
+     *
+     * @param  string  $selector
+     * @return $this
+     */
+    public function scrollTo($selector)
+    {
+        $this->ensurejQueryIsAvailable();
+
+        $selector = $this->resolver->format($selector);
+
+        $this->driver->executeScript("jQuery(\"html, body\").animate({scrollTop: jQuery(\"$selector\").offset().top}, 0);");
+
+        return $this;
+    }
+
+    /**
      * Take a screenshot and store it with the given name.
      *
      * @param  string  $name
@@ -257,9 +304,15 @@ class Browser
      */
     public function screenshot($name)
     {
-        $this->driver->takeScreenshot(
-            sprintf('%s/%s.png', rtrim(static::$storeScreenshotsAt, '/'), $name)
-        );
+        $filePath = sprintf('%s/%s.png', rtrim(static::$storeScreenshotsAt, '/'), $name);
+
+        $directoryPath = dirname($filePath);
+
+        if (! is_dir($directoryPath)) {
+            mkdir($directoryPath, 0777, true);
+        }
+
+        $this->driver->takeScreenshot($filePath);
 
         return $this;
     }
@@ -275,10 +328,9 @@ class Browser
         if (in_array($this->driver->getCapabilities()->getBrowserName(), static::$supportsRemoteLogs)) {
             $console = $this->driver->manage()->getLog('browser');
 
-            if (!empty($console)) {
+            if (! empty($console)) {
                 file_put_contents(
-                    sprintf('%s/%s.log', rtrim(static::$storeConsoleLogAt, '/'), $name)
-                    , json_encode($console, JSON_PRETTY_PRINT)
+                    sprintf('%s/%s.log', rtrim(static::$storeConsoleLogAt, '/'), $name), json_encode($console, JSON_PRETTY_PRINT)
                 );
             }
         }
@@ -330,7 +382,7 @@ class Browser
         );
 
         if ($this->page) {
-            $browser->on($this->page);
+            $browser->onWithoutAssert($this->page);
         }
 
         if ($selector instanceof Component) {
@@ -374,7 +426,7 @@ class Browser
      */
     public function ensurejQueryIsAvailable()
     {
-        if ($this->driver->executeScript("return window.jQuery == null")) {
+        if ($this->driver->executeScript('return window.jQuery == null')) {
             $this->driver->executeScript(file_get_contents(__DIR__.'/../bin/jquery.js'));
         }
     }

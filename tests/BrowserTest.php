@@ -2,15 +2,28 @@
 
 namespace Laravel\Dusk\Tests;
 
-use stdClass;
-use Mockery as m;
-use Laravel\Dusk\Page;
-use Laravel\Dusk\Browser;
-use PHPUnit\Framework\TestCase;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
+use Laravel\Dusk\Browser;
+use Laravel\Dusk\Page;
+use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class BrowserTest extends TestCase
 {
+    /** @var \Mockery\MockInterface */
+    private $driver;
+
+    /** @var Browser */
+    private $browser;
+
+    protected function setUp(): void
+    {
+        $this->driver = m::mock(stdClass::class);
+
+        $this->browser = new Browser($this->driver);
+    }
+
     protected function tearDown(): void
     {
         m::close();
@@ -82,10 +95,13 @@ class BrowserTest extends TestCase
 
         $browser->visit($page = new BrowserTestPage);
 
+        $page->asserted = false;
+
         $browser->with('prefix', function ($browser) use ($page) {
             $this->assertInstanceof(Browser::class, $browser);
             $this->assertEquals('body prefix', $browser->resolver->prefix);
             $this->assertEquals($page, $browser->page);
+            $this->assertFalse($page->asserted);
         });
     }
 
@@ -109,10 +125,13 @@ class BrowserTest extends TestCase
 
         $browser->visit($page = new BrowserTestPage);
 
+        $page->asserted = false;
+
         $browser->within('prefix', function ($browser) use ($page) {
             $this->assertInstanceof(Browser::class, $browser);
             $this->assertEquals('body prefix', $browser->resolver->prefix);
             $this->assertEquals($page, $browser->page);
+            $this->assertFalse($page->asserted);
         });
     }
 
@@ -148,6 +167,36 @@ class BrowserTest extends TestCase
         $browser = new Browser($driver);
 
         $browser->storeConsoleLog('file');
+    }
+
+    public function test_screenshot()
+    {
+        $this->driver->shouldReceive('takeScreenshot')->andReturnUsing(function ($filePath) {
+            touch($filePath);
+        });
+
+        Browser::$storeScreenshotsAt = sys_get_temp_dir();
+
+        $this->browser->screenshot(
+            $name = 'screenshot-01'
+        );
+
+        $this->assertFileExists(Browser::$storeScreenshotsAt.'/'.$name.'.png');
+    }
+
+    public function test_screenshot_in_subdirectory()
+    {
+        $this->driver->shouldReceive('takeScreenshot')->andReturnUsing(function ($filePath) {
+            touch($filePath);
+        });
+
+        Browser::$storeScreenshotsAt = sys_get_temp_dir();
+
+        $this->browser->screenshot(
+            $name = uniqid('random').'/sub/dir/screenshot-01'
+        );
+
+        $this->assertFileExists(Browser::$storeScreenshotsAt.'/'.$name.'.png');
     }
 }
 

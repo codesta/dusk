@@ -2,12 +2,12 @@
 
 namespace Laravel\Dusk\Tests;
 
-use stdClass;
-use Mockery as m;
-use Laravel\Dusk\Browser;
-use PHPUnit\Framework\TestCase;
 use Facebook\WebDriver\Remote\RemoteWebElement;
+use Laravel\Dusk\Browser;
+use Mockery as m;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class MakesAssertionsTest extends TestCase
 {
@@ -72,7 +72,7 @@ class MakesAssertionsTest extends TestCase
             $this->fail();
         } catch (ExpectationFailedException $e) {
             $this->assertStringContainsString(
-                "Element [body foo] is not present.",
+                'Element [body foo] is not present.',
                 $e->getMessage()
             );
         }
@@ -122,6 +122,42 @@ class MakesAssertionsTest extends TestCase
                 $e->getMessage()
             );
         }
+    }
+
+    public function test_assert_button_enabled()
+    {
+        $this->expectException(ExpectationFailedException::class);
+        $this->expectExceptionMessage("Expected button [Cant press me] to be enabled, but it wasn't.");
+
+        $driver = m::mock(stdClass::class);
+        $resolver = m::mock(stdClass::class);
+        $resolver->shouldReceive('resolveForButtonPress->isEnabled')->andReturn(
+            true,
+            false
+        );
+        $browser = new Browser($driver, $resolver);
+
+        $browser->assertButtonEnabled('Press me');
+
+        $browser->assertButtonEnabled('Cant press me');
+    }
+
+    public function test_assert_button_disabled()
+    {
+        $this->expectException(ExpectationFailedException::class);
+        $this->expectExceptionMessage("Expected button [Press me] to be disabled, but it wasn't.");
+
+        $driver = m::mock(stdClass::class);
+        $resolver = m::mock(stdClass::class);
+        $resolver->shouldReceive('resolveForButtonPress->isEnabled')->twice()->andReturn(
+            false,
+            true
+        );
+        $browser = new Browser($driver, $resolver);
+
+        $browser->assertButtonDisabled('Cant press me');
+
+        $browser->assertButtonDisabled('Press me');
     }
 
     public function test_assert_focused()
@@ -194,6 +230,50 @@ class MakesAssertionsTest extends TestCase
         } catch (ExpectationFailedException $e) {
             $this->assertStringContainsString(
                 'Unexpected value [2] selected for [select[name="users"]].',
+                $e->getMessage()
+            );
+        }
+    }
+
+    public function test_assert_vue_contains()
+    {
+        $driver = m::mock(stdClass::class);
+        $driver->shouldReceive('executeScript')->andReturn(['john']);
+
+        $resolver = m::mock(stdClass::class);
+        $resolver->shouldReceive('format')->with('@vue-component')->andReturn('body foo');
+
+        $browser = new Browser($driver, $resolver);
+
+        $browser->assertVueContains('users', 'john', '@vue-component');
+
+        try {
+            $browser->assertVueDoesNotContain('users', 'john', '@vue-component');
+            $this->fail();
+        } catch (ExpectationFailedException $e) {
+            $this->assertStringContainsString(
+                "Failed asserting that an array does not contain 'john'.",
+                $e->getMessage()
+            );
+        }
+    }
+
+    public function test_assert_vue_contains_with_no_result()
+    {
+        $driver = m::mock(stdClass::class);
+        $driver->shouldReceive('executeScript')->andReturn(null);
+
+        $resolver = m::mock(stdClass::class);
+        $resolver->shouldReceive('format')->with('@vue-component')->andReturn('body foo');
+
+        $browser = new Browser($driver, $resolver);
+
+        try {
+            $browser->assertVueContains('users', 'john', '@vue-component');
+            $this->fail();
+        } catch (ExpectationFailedException $e) {
+            $this->assertStringContainsString(
+                'The attribute for key [users] is not an array.',
                 $e->getMessage()
             );
         }

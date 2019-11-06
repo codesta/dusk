@@ -35,7 +35,7 @@ class DuskServiceProvider extends ServiceProvider
      * Register any package services.
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function register()
     {
@@ -47,6 +47,7 @@ class DuskServiceProvider extends ServiceProvider
                 Console\MakeCommand::class,
                 Console\PageCommand::class,
                 Console\ComponentCommand::class,
+                Console\ChromeDriverCommand::class,
             ]);
         }
     }

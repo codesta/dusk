@@ -2,10 +2,10 @@
 
 namespace Laravel\Dusk\Concerns;
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Assert as PHPUnit;
-use Facebook\WebDriver\Remote\RemoteWebElement;
-use Facebook\WebDriver\Exception\NoSuchElementException;
 
 trait MakesAssertions
 {
@@ -205,8 +205,8 @@ trait MakesAssertions
      */
     public function assertSourceHas($code)
     {
-        PHPUnit::assertContains(
-            $code, $this->driver->getPageSource(),
+        PHPUnit::assertTrue(
+            Str::contains($this->driver->getPageSource(), $code),
             "Did not find expected source code [{$code}]"
         );
 
@@ -221,8 +221,8 @@ trait MakesAssertions
      */
     public function assertSourceMissing($code)
     {
-        PHPUnit::assertNotContains(
-            $code, $this->driver->getPageSource(),
+        PHPUnit::assertFalse(
+            Str::contains($this->driver->getPageSource(), $code),
             "Found unexpected source code [{$code}]"
         );
 
@@ -469,7 +469,7 @@ JS;
 
         PHPUnit::assertCount(
             count($values), $options,
-            "Expected options [".implode(',', $values)."] for selection field [{$field}] to be available."
+            'Expected options ['.implode(',', $values)."] for selection field [{$field}] to be available."
         );
 
         return $this;
@@ -486,7 +486,7 @@ JS;
     {
         PHPUnit::assertCount(
             0, $this->resolver->resolveSelectOptions($field, $values),
-            "Unexpected options [".implode(',', $values)."] for selection field [{$field}]."
+            'Unexpected options ['.implode(',', $values)."] for selection field [{$field}]."
         );
 
         return $this;
@@ -660,6 +660,42 @@ JS;
     }
 
     /**
+     * Assert that the given button is enabled.
+     *
+     * @param  string  $button
+     * @return $this
+     */
+    public function assertButtonEnabled($button)
+    {
+        $element = $this->resolver->resolveForButtonPress($button);
+
+        PHPUnit::assertTrue(
+            $element->isEnabled(),
+            "Expected button [{$button}] to be enabled, but it wasn't."
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert that the given button is disabled.
+     *
+     * @param  string  $button
+     * @return $this
+     */
+    public function assertButtonDisabled($button)
+    {
+        $element = $this->resolver->resolveForButtonPress($button);
+
+        PHPUnit::assertFalse(
+            $element->isEnabled(),
+            "Expected button [{$button}] to be disabled, but it wasn't."
+        );
+
+        return $this;
+    }
+
+    /**
      * Assert that the given field is focused.
      *
      * @param  string  $field
@@ -737,7 +773,10 @@ JS;
      */
     public function assertVueContains($key, $value, $componentSelector = null)
     {
-        PHPUnit::assertContains($value, $this->vueAttribute($componentSelector, $key));
+        $attribute = $this->vueAttribute($componentSelector, $key);
+
+        PHPUnit::assertIsArray($attribute, "The attribute for key [$key] is not an array.");
+        PHPUnit::assertContains($value, $attribute);
 
         return $this;
     }
@@ -753,7 +792,10 @@ JS;
      */
     public function assertVueDoesNotContain($key, $value, $componentSelector = null)
     {
-        PHPUnit::assertNotContains($value, $this->vueAttribute($componentSelector, $key));
+        $attribute = $this->vueAttribute($componentSelector, $key);
+
+        PHPUnit::assertIsArray($attribute, "The attribute for key [$key] is not an array.");
+        PHPUnit::assertNotContains($value, $attribute);
 
         return $this;
     }
@@ -770,7 +812,7 @@ JS;
         $fullSelector = $this->resolver->format($componentSelector);
 
         return $this->driver->executeScript(
-            "return document.querySelector('" . $fullSelector . "').__vue__." . $key
+            "return document.querySelector('".$fullSelector."').__vue__.".$key
         );
     }
 }

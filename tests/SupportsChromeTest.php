@@ -2,8 +2,8 @@
 
 namespace Laravel\Dusk\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Laravel\Dusk\Chrome\SupportsChrome;
+use PHPUnit\Framework\TestCase;
 
 class SupportsChromeTest extends TestCase
 {
@@ -15,12 +15,12 @@ class SupportsChromeTest extends TestCase
 
         $process->start();
 
-        # Wait for the process to start up, and output any issues
+        // Wait for the process to start up, and output any issues
         sleep(2);
 
         $process->stop();
 
-        $this->assertStringContainsString("Starting ChromeDriver", $process->getOutput());
-        $this->assertSame("", $process->getErrorOutput());
+        $this->assertStringContainsString('Starting ChromeDriver', $process->getOutput());
+        $this->assertSame('', $process->getErrorOutput());
     }
 }

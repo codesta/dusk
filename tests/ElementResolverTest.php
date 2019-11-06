@@ -2,12 +2,12 @@
 
 namespace Laravel\Dusk\Tests;
 
-use stdClass;
-use Mockery as m;
-use ReflectionClass;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Laravel\Dusk\ElementResolver;
+use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use stdClass;
 
 class ElementResolverTest extends TestCase
 {
@@ -135,7 +135,7 @@ class ElementResolverTest extends TestCase
         $resolver = new ElementResolver(new stdClass, 'prefix');
         $resolver->pageElements([
             '@modal' => '#first',
-            '@modal-second' => '#second'
+            '@modal-second' => '#second',
         ]);
         $this->assertEquals('prefix #first', $resolver->format('@modal'));
         $this->assertEquals('prefix #second', $resolver->format('@modal-second'));

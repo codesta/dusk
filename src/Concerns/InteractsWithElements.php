@@ -66,7 +66,7 @@ trait InteractsWithElements
         $selector = $this->resolver->format($selector);
 
         $this->driver->executeScript(
-            "document.querySelector('{$selector}').value = '{$value}';"
+            'document.querySelector('.json_encode($selector).').value = '.json_encode($value).';'
         );
 
         return $this;
@@ -145,6 +145,21 @@ trait InteractsWithElements
     }
 
     /**
+     * Type the given value in the given field slowly.
+     *
+     * @param  string  $field
+     * @param  string  $value
+     * @param  int  $pause
+     * @return $this
+     */
+    public function typeSlowly($field, $value, $pause = 100)
+    {
+        $this->clear($field)->appendWithPauses($field, $value, $pause);
+
+        return $this;
+    }
+
+    /**
      * Type the given value in the given field without clearing it.
      *
      * @param  string  $field
@@ -154,6 +169,23 @@ trait InteractsWithElements
     public function append($field, $value)
     {
         $this->resolver->resolveForTyping($field)->sendKeys($value);
+
+        return $this;
+    }
+
+    /**
+     * Type the given value in the given field slowly without clearing it.
+     *
+     * @param  string  $field
+     * @param  string  $value
+     * @param  int  $pause
+     * @return $this
+     */
+    public function appendSlowly($field, $value, $pause = 100)
+    {
+        foreach (str_split($value) as $char) {
+            $this->append($field, $char)->pause($pause);
+        }
 
         return $this;
     }
@@ -187,6 +219,10 @@ trait InteractsWithElements
         if (is_null($value)) {
             $options[array_rand($options)]->click();
         } else {
+            if (is_bool($value)) {
+                $value = $value ? '1' : '0';
+            }
+
             foreach ($options as $option) {
                 if ((string) $option->getAttribute('value') === (string) $value) {
                     $option->click();

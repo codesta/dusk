@@ -1,6 +1,83 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/dusk/compare/v5.6.0...5.0)
+## [Unreleased](https://github.com/laravel/dusk/compare/v5.9.2...5.0)
+
+
+## [v5.9.2 (2020-02-18)](https://github.com/laravel/dusk/compare/v5.9.1...v5.9.2)
+
+### Fixed
+- Bugfix quoting for `InteractsWithElements::value` ([#735](https://github.com/laravel/dusk/pull/735))
+- Remove php-webdriver constraints ([#737](https://github.com/laravel/dusk/pull/737))
+
+
+## [v5.9.1 (2020-02-12)](https://github.com/laravel/dusk/compare/v5.9.0...v5.9.1)
+
+### Fixed
+- Adds the missing import for `InteractsWithMouse@clickAtXPath` ([#728](https://github.com/laravel/dusk/pull/728))
+- Size sanity check at fitContent ([#730](https://github.com/laravel/dusk/pull/730))
+- Lock php-webdriver constraints for now ([#733](https://github.com/laravel/dusk/pull/733))
+
+
+## [v5.9.0 (2020-01-28)](https://github.com/laravel/dusk/compare/v5.8.2...v5.9.0)
+
+### Added
+- Add `clickAtXPath` ([#723](https://github.com/laravel/dusk/pull/723), [effe73d](https://github.com/laravel/dusk/commit/effe73d6eb61b4bd77f88814bcd679e4fceb6f25))
+- Add `ProvidesBrowser::getCallerName()` ([#725](https://github.com/laravel/dusk/pull/725))
+
+### Fixed
+- Fit content to `<html>` instead of `<body>` ([#726](https://github.com/laravel/dusk/pull/726))
+
+
+## [v5.8.2 (2020-01-21)](https://github.com/laravel/dusk/compare/v5.8.1...v5.8.2)
+
+### Changed
+- Rename php-webdriver package ([#720](https://github.com/laravel/dusk/pull/720))
+- Update jQuery file ([#721](https://github.com/laravel/dusk/pull/721))
+
+### Fixed
+- Update `fitContent()` ([#717](https://github.com/laravel/dusk/pull/717))
+
+
+## [v5.8.1 (2020-01-07)](https://github.com/laravel/dusk/compare/v5.8.0...v5.8.1)
+
+### Fixed
+- Cast boolean values to appropriate string ([#713](https://github.com/laravel/dusk/pull/713))
+
+
+## [v5.8.0 (2019-12-30)](https://github.com/laravel/dusk/compare/v5.7.0...v5.8.0)
+
+### Added
+- Add "waitUntilMissingText" ([#706](https://github.com/laravel/dusk/pull/706))
+- Add ability to store source from browser ([#707](https://github.com/laravel/dusk/pull/707), [9c90e2a](https://github.com/laravel/dusk/commit/9c90e2a716030c9a36e6306c3f67d606a254bbb7), [1d5bc20](https://github.com/laravel/dusk/commit/1d5bc203b67ffc5a17eb1b89f3e22547e3ea174b))
+
+
+## [v5.7.0 (2019-12-17)](https://github.com/laravel/dusk/compare/v5.6.3...v5.7.0)
+
+### Added
+- Automatically fit content on failures ([#704](https://github.com/laravel/dusk/pull/704))
+
+
+## [v5.6.3 (2019-12-03)](https://github.com/laravel/dusk/compare/v5.6.2...v5.6.3)
+
+### Added
+- Support phpdotenv v4 ([#699](https://github.com/laravel/dusk/pull/699))
+
+### Fixed
+- scrollTo: add support for selectors with quotes ([#697](https://github.com/laravel/dusk/pull/697))
+
+
+## [v5.6.2 (2019-11-26)](https://github.com/laravel/dusk/compare/v5.6.1...v5.6.2)
+
+### Changed
+- Allow for Symfony 5 ([#696](https://github.com/laravel/dusk/pull/696))
+
+
+## [v5.6.1 (2019-11-12)](https://github.com/laravel/dusk/compare/v5.6.0...v5.6.1)
+
+### Fixed
+- Ensure jQuery for scrollTo ([#686](https://github.com/laravel/dusk/pull/686))
+- Added missing return statement in withDuskEnvironment ([#691](https://github.com/laravel/dusk/pull/691))
+- Prevent using pcntl when not installed ([#692](https://github.com/laravel/dusk/pull/692))
 
 
 ## [v5.6.0 (2019-10-29)](https://github.com/laravel/dusk/compare/v5.5.2...v5.6.0)

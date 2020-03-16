@@ -77,6 +77,7 @@ class ElementResolver
      *
      * @param  string  $field
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function resolveForTyping($field)
@@ -95,6 +96,7 @@ class ElementResolver
      *
      * @param  string  $field
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function resolveForSelection($field)
@@ -111,9 +113,10 @@ class ElementResolver
     /**
      * Resolve all the options with the given value on the select field.
      *
-     * @param string  $field
-     * @param array  $values
+     * @param  string  $field
+     * @param  array  $values
      * @return \Facebook\WebDriver\Remote\RemoteWebElement[]
+     *
      * @throws \Exception
      */
     public function resolveSelectOptions($field, array $values)
@@ -136,7 +139,9 @@ class ElementResolver
      * @param  string  $field
      * @param  string  $value
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function resolveForRadioSelection($field, $value = null)
     {
@@ -161,6 +166,7 @@ class ElementResolver
      * @param  string|null  $field
      * @param  string  $value
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function resolveForChecking($field, $value = null)
@@ -189,6 +195,7 @@ class ElementResolver
      *
      * @param  string  $field
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function resolveForAttachment($field)
@@ -207,6 +214,7 @@ class ElementResolver
      *
      * @param  string  $field
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function resolveForField($field)
@@ -226,6 +234,8 @@ class ElementResolver
      *
      * @param  string  $button
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
+     * @throws \InvalidArgumentException
      */
     public function resolveForButtonPress($button)
     {
@@ -331,6 +341,7 @@ class ElementResolver
      *
      * @param  array  $selectors
      * @return \Facebook\WebDriver\Remote\RemoteWebElement
+     *
      * @throws \Exception
      */
     public function firstOrFail($selectors)
